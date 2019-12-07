@@ -25,19 +25,22 @@ def run_graphics():
     # Main loop.
     while True:
         # React to user actions, such as key presses.
-        _handle_events()
+        _handle_events(screen)
 
         # Update the screen.
         pygame.display.flip()
 
 
-def _handle_events():
+def _handle_events(screen):
     """React to user actions, such as key presses."""
-    # Exit on Escape or Q press.
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
+            # Exit on Escape or Q press.
             if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
                 exit()
+            # Redraw the map on R press.
+            elif event.key == pygame.K_r:
+                _draw_map(screen)
 
 
 # TODO move color management to separate module.
