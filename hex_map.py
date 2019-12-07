@@ -10,7 +10,8 @@ from typing import List
 
 @dataclass
 class HexMap():
-    """Rectangular-shaped array of hexagons."""
+    """Rectangular-shaped array of hexagons.
+       Indexing starts at the top-left corner."""
 
     _width: int
     _height: int
@@ -29,17 +30,21 @@ class HexMap():
         """Generate a hexmap of size (width x height) in hexes."""
         initial_x, initial_y = (200, 200)
         tile_size = 50
+        # Create one tile to use its measurements later on.
         tile = HexTile(initial_x, initial_y, tile_size)
 
         tiles = []
         for n_row, n_column in product(range(height), range(width)):
             # Offset hexes to the left every other row.
-            offset = 0.5 * tile.width if n_row % 2 == 0 else 0
+            offset = -0.5 * tile.width if n_row % 2 == 0 else 0
+
+            # Vertical space is smaller than tile's full height for hexes.
+            vertical_space = tile.height * 0.75
 
             tiles.append(
                 HexTile(
-                    initial_x + n_column * tile.width - offset,
-                    initial_y + n_row * tile.height * 0.75,
+                    initial_x + n_column * tile.width + offset,
+                    initial_y + n_row * vertical_space,
                     tile_size)
             )
         return tiles

@@ -21,14 +21,20 @@ class HexTile:
 
     @cached_property
     def corners(self):
-        """Calculate all corners for a hex."""
+        """Return list of this hex's corners."""
+        return [Vector(int(x), int(y))
+                for x, y in self._get_corners()]
+
+    def _get_corners(self):
+        """Calculate all corners for this hextile."""
         for num_corner in range(6):
+            # Each corner is 60 degrees apart from the next one.
             angle_degrees = 60 * num_corner + 30
             angle_rad = PI / 180 * angle_degrees
-            # TODO Consider casting to int first.
-            yield Vector(
-                self._x_position + self._size * cos(angle_rad),
-                self._y_position + self._size * sin(angle_rad))
+            # Calculate 6 points by drawing 6 lines from the center.
+            # Lines' length are determined by hextile's size.
+            yield (self._x_position + self._size * cos(angle_rad),
+                   self._y_position + self._size * sin(angle_rad))
 
     @cached_property
     def width(self):
