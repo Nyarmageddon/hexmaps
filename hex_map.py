@@ -24,6 +24,9 @@ class HexMap():
         if not self._hexes:
             self._hexes = HexMap._generate_empty_map(self._width, self._height)
 
+    def __iter__(self):
+        return iter(self._hexes)
+
     # TODO think of correct place to put this method in.
     @staticmethod
     def _generate_empty_map(width, height):
