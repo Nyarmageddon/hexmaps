@@ -7,7 +7,7 @@ from functools import cached_property
 from math import sqrt, sin, cos
 from math import pi as PI
 
-Vector = namedtuple("Vector", "x y")
+Point = namedtuple("Point", "x y")
 
 
 @dataclass(frozen=True)
@@ -25,7 +25,7 @@ class HexTile:
     @cached_property
     def corners(self):
         """Return list of this hex's corners."""
-        return [Vector(int(x), int(y))
+        return [Point(int(x), int(y))
                 for x, y in self._get_corners()]
 
     def _get_corners(self):
@@ -38,6 +38,11 @@ class HexTile:
             # Lines' length are determined by hextile's size.
             yield (self._x_position + self._size * cos(angle_rad),
                    self._y_position + self._size * sin(angle_rad))
+
+    @cached_property
+    def position(self) -> Point:
+        """Return tile's position on the screen."""
+        return Point(self._x_position, self._y_position)
 
     @cached_property
     def width(self):
