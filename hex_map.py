@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from itertools import product
 from typing import List
 
-from hexes import HexTile
+from hexes import HexTile, Point
 
 
 @dataclass
@@ -14,9 +14,14 @@ class HexMap():
     """Rectangular-shaped array of hexagons.
        Indexing starts at the top-left corner."""
 
+    # Map's dimensions in hexes.
     _width: int
     _height: int
+
     _hex_size: float = 50
+
+    # Position of top-left tile the map starts from.
+    _first_hex: Point = field(default_factory=tuple)
 
     _hexes: List[HexTile] = field(default_factory=list)
 
@@ -24,11 +29,13 @@ class HexMap():
         """Generate hexmap's contents if none were provided."""
         if not self._hexes:
             self._hexes = HexMap._generate_empty_map(self._width, self._height)
+            self._first_hex = self._hexes[0].position
 
     def __iter__(self):
         return iter(self._hexes)
 
     # TODO think of correct place to put this method in.
+    # The idea is to put it into a hex_map.generator module.
     @staticmethod
     def _generate_empty_map(width: int, height: int,
                             initial_x: float = 200, initial_y: float = 200,
