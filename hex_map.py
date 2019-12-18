@@ -3,9 +3,10 @@
 """
 
 from dataclasses import dataclass, field
-from hexes import HexTile
 from itertools import product
 from typing import List
+
+from hexes import HexTile
 
 
 @dataclass
@@ -29,10 +30,10 @@ class HexMap():
 
     # TODO think of correct place to put this method in.
     @staticmethod
-    def _generate_empty_map(width, height):
+    def _generate_empty_map(width: int, height: int,
+                            initial_x: float = 200, initial_y: float = 200,
+                            tile_size: float = 50):
         """Generate a hexmap of size (width x height) in hexes."""
-        initial_x, initial_y = (200, 200)
-        tile_size = 50
         # Create one tile to use its measurements later on.
         tile = HexTile(initial_x, initial_y, tile_size)
 
@@ -48,6 +49,9 @@ class HexMap():
                 HexTile(
                     initial_x + n_column * tile.width + offset,
                     initial_y + n_row * vertical_space,
-                    tile_size)
+                    tile_size,
+                    n_column * 2,  # Doubled coordinates for columns
+                    n_row
+                )
             )
         return tiles

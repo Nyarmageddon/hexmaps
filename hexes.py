@@ -19,6 +19,9 @@ class HexTile:
     _y_position: float = 0
     _size: float = 30
 
+    _offsetx: int = 0
+    _offsety: int = 0
+
     @cached_property
     def corners(self):
         """Return list of this hex's corners."""
