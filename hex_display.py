@@ -20,18 +20,18 @@ def run_graphics():
     screen = pygame.display.set_mode(SCREEN_RESOLUTION)
     screen.fill(color=BG_COLOR)
 
-    _draw_map(screen)
+    my_map = _draw_map(screen)
 
     # Main loop.
     while True:
         # React to user actions, such as key presses.
-        _handle_events(screen)
+        _handle_events(screen, my_map)
 
         # Update the screen.
         pygame.display.flip()
 
 
-def _handle_events(screen):
+def _handle_events(screen, hexmap: HexMap):
     """React to user actions, such as key presses."""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -41,6 +41,11 @@ def _handle_events(screen):
             # Redraw the map on R press.
             elif event.key == pygame.K_r:
                 _draw_map(screen)
+        # Print hex's coordinates on click.
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  # LMB press
+                tile = hexmap.pixel2hex(*event.pos)
+                print(tile)
 
 
 # TODO move color management to separate module.
@@ -57,6 +62,7 @@ def _draw_map(screen):
         # print(tile)
         tile_color = _modify_color(BASE_TILE_COLOR)
         pygame.draw.polygon(screen, tile_color, tile.corners)
+    return my_map
 
 
 def _draw_hex(screen):

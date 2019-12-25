@@ -4,6 +4,7 @@
 
 from dataclasses import dataclass, field
 from itertools import product
+from math import sqrt
 from typing import List
 
 from hexes import HexTile, Point
@@ -33,6 +34,20 @@ class HexMap():
 
     def __iter__(self):
         return iter(self._hexes)
+
+    def pixel2hex(self, pixel_x: float, pixel_y: float) -> HexTile:
+        """Find hex in this map by pixel location (i.e. a mouse click)."""
+        # First find coordinates without the initial offset from top-left.
+        base_x, base_y = self._first_hex
+        x = pixel_x - base_x
+        y = pixel_y - base_y
+
+        # Find hex's position in (q, r) axis.
+        # Math src: https://www.redblobgames.com/grids/hexagons/#pixel-to-hex
+        q_axis = (sqrt(3)/3 * x - 1/3 * y) / self._hex_size
+        r_axis = (2/3 * y) / self._hex_size
+
+        return (round(q_axis), round(r_axis))
 
     # TODO think of correct place to put this method in.
     # The idea is to put it into a hex_map.generator module.
