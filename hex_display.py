@@ -5,7 +5,7 @@ from random import randint
 import pygame
 
 from hexes import HexTile
-from hex_map import HexMap
+from hexmaps import HexMap
 
 # TODO Move these to some kind of config.
 SCREEN_RESOLUTION = (1200, 800)
