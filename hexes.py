@@ -8,7 +8,9 @@ from typing import Tuple
 from math import sqrt, sin, cos
 from math import pi as PI
 
-Point = namedtuple("Point", "x y")
+Point = namedtuple("Point", "x_position y_position")
+AxialCoords = namedtuple("AxialCoords", "q_axis r_axis")
+CubeCoords = namedtuple("CubeCoods", "x_axis y_axis z_axis")
 
 
 @dataclass(frozen=True)
@@ -57,27 +59,27 @@ class HexTile:
         return 2 * self._size
 
     @staticmethod
-    def axial2cube(coordinates: Tuple[float]) -> Tuple[float]:
+    def axial2cube(coordinates: AxialCoords) -> CubeCoords:
         """Convert hex's axial coordinates (q, r)
             to cube coordinates (x, y, z)."""
         q_axis, r_axis = coordinates
 
         # Required ratio of q + r + s = 0
         s_axis = -q_axis - r_axis
-        return (q_axis, r_axis, s_axis)
+        return CubeCoords(q_axis, r_axis, s_axis)
 
     @staticmethod
-    def cube2axial(coordinates: Tuple[float]) -> Tuple[float]:
+    def cube2axial(coordinates: CubeCoords) -> AxialCoords:
         """Convert hex's cube coordinates (x, y, z)
             to axial coordinates (q, r)."""
-        return tuple(coordinates[:2])
+        return AxialCoords(*coordinates[:2])
 
     @staticmethod
-    def round_cube(coordinates: Tuple[float]) -> Tuple[int]:
+    def round_cube(coordinates: CubeCoords) -> CubeCoords:
         """Round cube coordinates to the nearest hex.
            The result is (x, y, z) integer coordinates."""
-        round_coords = [round(axis) for axis in coordinates]
         # Round all coordinates to int values.
+        round_coords = [round(axis) for axis in coordinates]
         x_round, y_round, z_round = round_coords
 
         # Calculate differences made when rounding, for each axis.
@@ -86,6 +88,7 @@ class HexTile:
             for started, round_ in zip(coordinates, round_coords)
         )
 
+        # Find biggest difference of them; recalculate value for that axis.
         if x_diff > y_diff and x_diff > z_diff:
             x_round = -y_round - z_round
         elif y_diff > z_diff:
@@ -93,4 +96,4 @@ class HexTile:
         else:
             z_round = -x_round - y_round
 
-        return (x_round, y_round, z_round)
+        return CubeCoords(x_round, y_round, z_round)
