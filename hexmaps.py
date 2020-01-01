@@ -47,7 +47,9 @@ class HexMap():
         q_axis = (sqrt(3)/3 * x - 1/3 * y) / self._hex_size
         r_axis = (2/3 * y) / self._hex_size
 
-        return (round(q_axis), round(r_axis))
+        # Convert axial -> cube, find the hex, convert cube back to axial.
+        return HexTile.cube2axial(
+            HexTile.round_cube(HexTile.axial2cube((q_axis, r_axis))))
 
     # TODO think of correct place to put this method in.
     # The idea is to put it into a hex_map.generator module.

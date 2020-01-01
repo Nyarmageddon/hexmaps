@@ -3,6 +3,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
 from functools import cached_property
+from typing import Tuple
 
 from math import sqrt, sin, cos
 from math import pi as PI
@@ -54,3 +55,42 @@ class HexTile:
     def height(self):
         """Calculate hex's height."""
         return 2 * self._size
+
+    @staticmethod
+    def axial2cube(coordinates: Tuple[float]) -> Tuple[float]:
+        """Convert hex's axial coordinates (q, r)
+            to cube coordinates (x, y, z)."""
+        q_axis, r_axis = coordinates
+
+        # Required ratio of q + r + s = 0
+        s_axis = -q_axis - r_axis
+        return (q_axis, r_axis, s_axis)
+
+    @staticmethod
+    def cube2axial(coordinates: Tuple[float]) -> Tuple[float]:
+        """Convert hex's cube coordinates (x, y, z)
+            to axial coordinates (q, r)."""
+        return tuple(coordinates[:2])
+
+    @staticmethod
+    def round_cube(coordinates: Tuple[float]) -> Tuple[int]:
+        """Round cube coordinates to the nearest hex.
+           The result is (x, y, z) integer coordinates."""
+        round_coords = [round(axis) for axis in coordinates]
+        # Round all coordinates to int values.
+        x_round, y_round, z_round = round_coords
+
+        # Calculate differences made when rounding, for each axis.
+        x_diff, y_diff, z_diff = (
+            abs(started - round_)
+            for started, round_ in zip(coordinates, round_coords)
+        )
+
+        if x_diff > y_diff and x_diff > z_diff:
+            x_round = -y_round - z_round
+        elif y_diff > z_diff:
+            y_round = -x_round - z_round
+        else:
+            z_round = -x_round - y_round
+
+        return (x_round, y_round, z_round)
