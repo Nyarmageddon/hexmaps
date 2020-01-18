@@ -31,7 +31,7 @@ class HexTile:
         return [Point(int(x), int(y))
                 for x, y in self._get_corners()]
 
-    def _get_corners(self) -> Generator[Tuple[float]]:
+    def _get_corners(self) -> Generator[Tuple[float], None, None]:
         """Calculate all corners for this hextile."""
         for num_corner in range(6):
             # Each corner is 60 degrees apart from the next one.
