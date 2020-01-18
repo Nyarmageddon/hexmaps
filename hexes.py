@@ -3,7 +3,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Tuple
+from typing import List, Generator, Tuple
 
 from math import sqrt, sin, cos
 from math import pi as PI
@@ -26,12 +26,12 @@ class HexTile:
     _offsety: int = 0
 
     @cached_property
-    def corners(self):
+    def corners(self) -> List[Point]:
         """Return list of this hex's corners."""
         return [Point(int(x), int(y))
                 for x, y in self._get_corners()]
 
-    def _get_corners(self):
+    def _get_corners(self) -> Generator[Tuple[float]]:
         """Calculate all corners for this hextile."""
         for num_corner in range(6):
             # Each corner is 60 degrees apart from the next one.
@@ -48,13 +48,13 @@ class HexTile:
         return Point(self._x_position, self._y_position)
 
     @cached_property
-    def width(self):
+    def width(self) -> float:
         """Calculate hex's width."""
         # sqrt(3) comes from sin of 60 degrees.
         return sqrt(3) * self._size
 
     @cached_property
-    def height(self):
+    def height(self) -> float:
         """Calculate hex's height."""
         return 2 * self._size
 
@@ -96,6 +96,7 @@ class HexTile:
         )
 
         # Find biggest difference of them; recalculate value for that axis.
+        # Maintain the ratio of (x + y + z = 0).
         if x_diff > y_diff and x_diff > z_diff:
             x_round = -y_round - z_round
         elif y_diff > z_diff:

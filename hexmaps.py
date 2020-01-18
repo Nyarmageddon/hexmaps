@@ -5,7 +5,7 @@
 from dataclasses import dataclass, field
 from itertools import product
 from math import sqrt
-from typing import List
+from typing import Iterator, List
 
 from hexes import HexTile, Point, AxialCoords
 
@@ -25,16 +25,16 @@ class HexMap():
     _first_hex: Point = field(default_factory=tuple)
     _hexes: List[HexTile] = field(default_factory=list)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Generate hexmap's contents if none were provided."""
         if not self._hexes:
             self._hexes = HexMap._generate_hexes(self._width, self._height)
             self._first_hex = self._hexes[0].position
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[HexTile]:
         return iter(self._hexes)
 
-    def find_by_axial(self, coords: AxialCoords):
+    def find_by_axial(self, coords: AxialCoords) -> HexTile:
         """Find and return a hex tile by its axial coordinates,
            or None if no hex was found."""
         for hex_tile in self._hexes:
@@ -64,7 +64,7 @@ class HexMap():
     @staticmethod
     def _generate_hexes(width: int, height: int,
                         initial_x: float = 200, initial_y: float = 200,
-                        tile_size: float = 50):
+                        tile_size: float = 50) -> List[HexTile]:
         """Generate a hexmap of size (width x height) in hexes."""
         # Create one tile to use its measurements later on.
         tile = HexTile(initial_x, initial_y, tile_size)
