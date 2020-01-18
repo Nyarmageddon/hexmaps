@@ -28,7 +28,10 @@ class HexMap():
     def __post_init__(self) -> None:
         """Generate hexmap's contents if none were provided."""
         if not self._hexes:
-            self._hexes = HexMap._generate_hexes(self._width, self._height)
+            self._hexes = HexMap._generate_hexes(self._width, self._height,
+                                                 *self._first_hex,
+                                                 hex_size=self._hex_size,)
+
             self._first_hex = self._hexes[0].position
 
     def __iter__(self) -> Iterator[HexTile]:
@@ -63,15 +66,15 @@ class HexMap():
     # TODO think of correct place to put this method in.
     @staticmethod
     def _generate_hexes(width: int, height: int,
-                        initial_x: float = 200, initial_y: float = 200,
-                        tile_size: float = 50) -> List[HexTile]:
+                        initial_x: float = 0, initial_y: float = 0,
+                        hex_size: float = 50) -> List[HexTile]:
         """Generate a hexmap of size (width x height) in hexes."""
         # Create one tile to use its measurements later on.
-        tile = HexTile(initial_x, initial_y, tile_size)
+        tile = HexTile(initial_x, initial_y, hex_size)
 
         tiles = []
         for n_row, n_column in product(range(height), range(width)):
-            # Offset hexes to the left in odd rows.
+            # Offset hexes to the left in even rows.
             offset = -0.5 * tile.width if n_row % 2 == 0 else 0
 
             # Vertical space is smaller than tile's full height for hexes.
@@ -81,7 +84,7 @@ class HexMap():
                 HexTile(
                     initial_x + n_column * tile.width + offset,
                     initial_y + n_row * vertical_space,
-                    tile_size,
+                    hex_size,
                     # Set up even X-coordinates for even rows by doubling.
                     # In odd rows, offset them by 1.
                     n_column * 2 + (0 if offset else 1),

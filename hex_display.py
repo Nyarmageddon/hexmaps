@@ -57,7 +57,7 @@ def _modify_color(color):
 
 def _draw_map(screen):
     """Draw a grid of hexes on the screen."""
-    my_map = HexMap(8, 8)
+    my_map = HexMap(8, 8, _hex_size=50, _first_hex=(200, 200))
     for tile in my_map:
         # print(tile)
         tile_color = _modify_color(BASE_TILE_COLOR)
