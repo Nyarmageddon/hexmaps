@@ -74,8 +74,8 @@ class HexMap():
 
         tiles = []
         for n_row, n_column in product(range(height), range(width)):
-            # Offset hexes to the left in even rows.
-            offset = -0.5 * tile.width if n_row % 2 == 0 else 0
+            # Offset hexes to the right in odd rows.
+            offset = 0.5 * tile.width if n_row % 2 == 1 else 0
 
             # Vertical space is smaller than tile's full height for hexes.
             vertical_space = tile.height * 0.75
@@ -87,7 +87,7 @@ class HexMap():
                     hex_size,
                     # Set up even X-coordinates for even rows by doubling.
                     # In odd rows, offset them by 1.
-                    n_column * 2 + (0 if offset else 1),
+                    n_column * 2 + (1 if offset else 0),
                     n_row
                 )
             )
