@@ -28,7 +28,7 @@ class HexTile:
     @cached_property
     def corners(self) -> List[Point]:
         """Return list of this hex's corners."""
-        return [Point(int(x), int(y))
+        return [Point(round(x), round(y))
                 for x, y in self._get_corners()]
 
     def _get_corners(self) -> Generator[Tuple[float], None, None]:
