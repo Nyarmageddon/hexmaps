@@ -58,6 +58,13 @@ class HexTile:
         """Calculate hex's height."""
         return 2 * self._size
 
+    @cached_property
+    def axial(self) -> AxialCoords:
+        """Convert hex's doubled coordinates to axial."""
+        x, y = self._offsetx, self._offsety
+        q, r = (x - y)//2, y
+        return AxialCoords(q, r)
+
     @staticmethod
     def axial2cube(coordinates: AxialCoords) -> CubeCoords:
         """Convert hex's axial coordinates (q, r)

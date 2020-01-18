@@ -7,7 +7,7 @@ from itertools import product
 from math import sqrt
 from typing import List
 
-from hexes import HexTile, Point
+from hexes import HexTile, Point, AxialCoords
 
 
 @dataclass
@@ -23,17 +23,23 @@ class HexMap():
 
     # Position of top-left tile the map starts from.
     _first_hex: Point = field(default_factory=tuple)
-
     _hexes: List[HexTile] = field(default_factory=list)
 
     def __post_init__(self):
         """Generate hexmap's contents if none were provided."""
         if not self._hexes:
-            self._hexes = HexMap._generate_empty_map(self._width, self._height)
+            self._hexes = HexMap._generate_hexes(self._width, self._height)
             self._first_hex = self._hexes[0].position
 
     def __iter__(self):
         return iter(self._hexes)
+
+    def find_by_axial(self, coords: AxialCoords):
+        """Find and return a hex tile by its axial coordinates,
+           or None if no hex was found."""
+        for hex_tile in self._hexes:
+            if hex_tile.axial == coords:
+                return hex_tile
 
     def pixel2hex(self, pixel_x: float, pixel_y: float) -> HexTile:
         """Find hex in this map by pixel location (i.e. a mouse click)."""
@@ -47,23 +53,25 @@ class HexMap():
         q_axis = (sqrt(3)/3 * x - 1/3 * y) / self._hex_size
         r_axis = (2/3 * y) / self._hex_size
 
-        # Convert axial -> cube, find the hex, convert cube back to axial.
-        return HexTile.cube2axial(
+        # Convert coords axial -> cube, round them to the closest hex,
+        #  convert coords from cube back to axial.
+        coords = HexTile.cube2axial(
             HexTile.round_cube(HexTile.axial2cube((q_axis, r_axis))))
 
+        return self.find_by_axial(coords)
+
     # TODO think of correct place to put this method in.
-    # The idea is to put it into a hex_map.generator module.
     @staticmethod
-    def _generate_empty_map(width: int, height: int,
-                            initial_x: float = 200, initial_y: float = 200,
-                            tile_size: float = 50):
+    def _generate_hexes(width: int, height: int,
+                        initial_x: float = 200, initial_y: float = 200,
+                        tile_size: float = 50):
         """Generate a hexmap of size (width x height) in hexes."""
         # Create one tile to use its measurements later on.
         tile = HexTile(initial_x, initial_y, tile_size)
 
         tiles = []
         for n_row, n_column in product(range(height), range(width)):
-            # Offset hexes to the left every other row.
+            # Offset hexes to the left in odd rows.
             offset = -0.5 * tile.width if n_row % 2 == 0 else 0
 
             # Vertical space is smaller than tile's full height for hexes.
@@ -74,7 +82,9 @@ class HexMap():
                     initial_x + n_column * tile.width + offset,
                     initial_y + n_row * vertical_space,
                     tile_size,
-                    n_column * 2,  # Doubled coordinates for columns
+                    # Set up even X-coordinates for even rows by doubling.
+                    # In odd rows, offset them by 1.
+                    n_column * 2 + (0 if offset else 1),
                     n_row
                 )
             )
