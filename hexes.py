@@ -11,6 +11,7 @@ from math import pi as PI
 Point = namedtuple("Point", "x_position y_position")
 AxialCoords = namedtuple("AxialCoords", "q_axis r_axis")
 CubeCoords = namedtuple("CubeCoods", "x_axis y_axis z_axis")
+DoubledCoords = namedtuple("DoubledCoords", "x_offset y_offset")
 
 
 @dataclass(frozen=True)
@@ -57,6 +58,11 @@ class HexTile:
     def height(self) -> float:
         """Calculate hex's height."""
         return 2 * self._size
+
+    @cached_property
+    def doubled(self) -> DoubledCoords:
+        """This tile's doubled offset coordinates."""
+        return DoubledCoords(self._offsetx, self._offsety)
 
     @cached_property
     def axial(self) -> AxialCoords:
