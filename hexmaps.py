@@ -7,7 +7,17 @@ from itertools import product
 from math import sqrt
 from typing import Iterator, List
 
-from hexes import HexTile, Point, AxialCoords
+from hexes import HexTile, Point, AxialCoords, DoubledCoords
+
+# 6 directions in doubled coordinates to search for hex's neighbors.
+NEIGHBOR_DIRECTIONS = (
+    (2, 0),
+    (1, 1),
+    (-1, 1),
+    (-2, 0),
+    (-1, -1),
+    (1, -1)
+)
 
 
 @dataclass
@@ -43,6 +53,25 @@ class HexMap():
         for hex_tile in self._hexes:
             if hex_tile.axial == coords:
                 return hex_tile
+
+    def find_neighbors(self, hex_tile: HexTile) -> List[HexTile]:
+        """Find given tile's neighbors on this map."""
+        tile_coords = hex_tile.doubled
+
+        # Try finding neighbors in all 6 directions.
+        neighbor_coords = []
+        for neighbor_offset in NEIGHBOR_DIRECTIONS:
+            # Add together base coordinates and vectors to 6 neighbors.
+            result = DoubledCoords(*(sum(pair)
+                                     for pair in zip(tile_coords, neighbor_offset)))
+            neighbor_coords.append(result)
+
+        # Return all neighboring hexes by searching their coordinates.
+        return [
+            hex_tile
+            for hex_tile in self._hexes
+            if hex_tile.doubled in neighbor_coords
+        ]
 
     def pixel2hex(self, pixel_x: float, pixel_y: float) -> HexTile:
         """Find hex in this map by pixel location (i.e. a mouse click)."""
