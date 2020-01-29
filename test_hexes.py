@@ -106,14 +106,8 @@ def test_axial(doubled: Doubled, expected: AxialCoords):
 
 
 @pytest.mark.parametrize(
-    "axial, expected", zip(axial, cube)
+    "axial, cube", zip(axial, cube)
 )
-def test_axial2cube(axial: AxialCoords, expected: CubeCoords):
-    assert HexTile.axial2cube(axial) == expected
-
-
-@pytest.mark.parametrize(
-    "cube, expected", zip(cube, axial)
-)
-def test_cube2axial(cube: CubeCoords, expected: AxialCoords):
-    assert HexTile.cube2axial(cube) == expected
+def test_axial_cube_conversion(axial: AxialCoords, cube: CubeCoords):
+    assert HexTile.axial2cube(axial) == cube
+    assert HexTile.cube2axial(cube) == axial
