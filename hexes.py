@@ -71,6 +71,13 @@ class HexTile:
         q, r = (x - y)//2, y
         return AxialCoords(q, r)
 
+    # Conversion methods
+
+    @staticmethod
+    def axial2doubled(coordinates: AxialCoords) -> DoubledCoords:
+        q, r = coordinates
+        return DoubledCoords(2*q + r, r)
+
     @staticmethod
     def axial2cube(coordinates: AxialCoords) -> CubeCoords:
         """Convert hex's axial coordinates (q, r)
