@@ -47,6 +47,38 @@ class HexMap():
     def __iter__(self) -> Iterator[HexTile]:
         return iter(self._hexes)
 
+    def get_hex(self, *coordinates) -> HexTile:
+        """Get hex with given doubled coordinates, or None if not in this map.
+           Supports either singular argument with two coordinates in it,
+           or two int arguments."""
+        if len(coordinates) == 1:
+            orig_x, orig_y = coordinates[0]
+        elif len(coordinates) == 2:
+            orig_x, orig_y = coordinates
+        else:
+            raise TypeError("Need to provide coordinates of a given hex.")
+
+        x = orig_x // 2  # Remove the doubling of X-coordinates
+
+        # Check for map boundaries
+        if x < 0 or x >= self._width or orig_y < 0 or orig_y >= self._height:
+            return None
+
+        # Convert 2D coordinates to flat list index.
+        hex_index = orig_y * self._width + x
+        try:
+            found_hex = self._hexes[hex_index]
+        except IndexError:
+            return None
+
+        # Validate coordinates to verify we found the correct tile.
+        # This filters out invalid coordinates, for example (1, 0).
+        found_x, found_y = found_hex.doubled
+        if (orig_x, orig_y) != (found_x, found_y):
+            return None
+        else:
+            return found_hex
+
     def find_by_axial(self, coords: AxialCoords) -> HexTile:
         """Find and return a hex tile by its axial coordinates,
            or None if no hex was found."""
@@ -68,9 +100,9 @@ class HexMap():
 
         # Return all neighboring hexes by searching their coordinates.
         return [
-            hex_tile
-            for hex_tile in self._hexes
-            if hex_tile.doubled in neighbor_coords
+            self.get_hex(coords)
+            for coords in neighbor_coords
+            if self.get_hex(coords)
         ]
 
     def pixel2hex(self, pixel_x: float, pixel_y: float) -> HexTile:
@@ -86,11 +118,11 @@ class HexMap():
         r_axis = (2/3 * y) / self._hex_size
 
         # Convert coords axial -> cube, round them to the closest hex,
-        #  convert coords from cube back to axial.
-        coords = HexTile.cube2axial(
-            HexTile.round_cube(HexTile.axial2cube((q_axis, r_axis))))
+        #  convert from cube back to axial and then to doubled 0_0.
+        coords = HexTile.axial2doubled(HexTile.cube2axial(
+            HexTile.round_cube(HexTile.axial2cube((q_axis, r_axis)))))
 
-        return self.find_by_axial(coords)
+        return self.get_hex(coords)
 
     # TODO think of correct place to put this method in.
     @staticmethod
