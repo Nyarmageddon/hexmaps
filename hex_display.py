@@ -45,7 +45,14 @@ def _handle_events(screen, hexmap: HexMap):
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # LMB press
                 tile = hexmap.pixel2hex(*event.pos)
-                print(tile)
+                if tile:
+                    x, y = tile.doubled
+                    print(f"Clicked tile at {(x, y)}. Neighbors:")
+                    neighbors = hexmap.find_neighbors(tile)
+                    for neighbor in neighbors:
+                        x, y = neighbor.doubled
+                        print((x, y))
+                    print()
 
 
 # TODO move color management to separate module.
@@ -57,7 +64,7 @@ def _modify_color(color):
 
 def _draw_map(screen):
     """Draw a grid of hexes on the screen."""
-    my_map = HexMap(8, 8, _hex_size=50, _first_hex=(200, 200))
+    my_map = HexMap(30, 30, _hex_size=30)
     for tile in my_map:
         # print(tile)
         tile_color = _modify_color(BASE_TILE_COLOR)
