@@ -5,9 +5,7 @@ from typing import Tuple
 
 import pytest
 
-from hexes import HexTile, AxialCoords, CubeCoords, Point
-
-Doubled = Tuple[int]
+from hexes import HexTile, DoubledCoords, AxialCoords, CubeCoords, Point
 
 
 @pytest.fixture
@@ -69,12 +67,12 @@ def test_width_height(hex_100_size: HexTile):
 # Coordinate convertion tests.
 
 doubled = [
-    (0, 0),
-    (2, 0),
-    (1, 1),
-    (3, 1),
-    (-4, 0),
-    (15, 5),
+    DoubledCoords(0, 0),
+    DoubledCoords(2, 0),
+    DoubledCoords(1, 1),
+    DoubledCoords(3, 1),
+    DoubledCoords(-4, 0),
+    DoubledCoords(15, 5),
 ]
 
 axial = [
@@ -97,12 +95,11 @@ cube = [
 
 
 @pytest.mark.parametrize(
-    "doubled, expected", zip(doubled, axial)
+    "doubled, axial", zip(doubled, axial)
 )
-def test_axial(doubled: Doubled, expected: AxialCoords):
-    x, y = doubled
-    hex_tile = HexTile(_offsetx=x, _offsety=y)
-    assert hex_tile.axial == expected
+def test_doubled_axial_counversion(doubled: DoubledCoords, axial: AxialCoords):
+    assert HexTile.doubled2axial(doubled) == axial
+    assert HexTile.axial2doubled(axial) == doubled
 
 
 @pytest.mark.parametrize(
