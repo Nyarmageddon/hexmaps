@@ -27,10 +27,10 @@ class HexTile:
     _offsety: int = 0
 
     @cached_property
-    def corners(self) -> List[Point]:
-        """Return list of this hex's corners."""
-        return [Point(round(x), round(y))
-                for x, y in self._get_corners()]
+    def corners(self) -> Tuple[Point]:
+        """Return tuple of this hex's corners."""
+        return tuple((Point(round(x), round(y))
+                      for x, y in self._get_corners()))
 
     def _get_corners(self) -> Generator[Tuple[float], None, None]:
         """Calculate all corners for this hextile."""
@@ -67,9 +67,7 @@ class HexTile:
     @cached_property
     def axial(self) -> AxialCoords:
         """Convert hex's doubled coordinates to axial."""
-        x, y = self._offsetx, self._offsety
-        q, r = (x - y)//2, y
-        return AxialCoords(q, r)
+        return HexTile.doubled2axial(self.doubled)
 
     # Conversion methods
 
@@ -77,6 +75,12 @@ class HexTile:
     def axial2doubled(coordinates: AxialCoords) -> DoubledCoords:
         q, r = coordinates
         return DoubledCoords(2*q + r, r)
+
+    @staticmethod
+    def doubled2axial(coordinates: DoubledCoords) -> AxialCoords:
+        x, y = coordinates
+        q, r = (x - y)//2, y
+        return AxialCoords(q, r)
 
     @staticmethod
     def axial2cube(coordinates: AxialCoords) -> CubeCoords:
