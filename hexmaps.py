@@ -5,9 +5,11 @@
 from dataclasses import dataclass, field
 from itertools import product
 from math import sqrt
+from random import randint
 from typing import Iterator, List
 
 from hexes import HexTile, Point, AxialCoords, DoubledCoords
+from hex_types import HexType
 
 # 6 directions in doubled coordinates to search for hex's neighbors.
 NEIGHBOR_DIRECTIONS = (
@@ -149,7 +151,8 @@ class HexMap():
                     # Set up even X-coordinates for even rows by doubling.
                     # In odd rows, offset them by 1.
                     n_column * 2 + (1 if offset else 0),
-                    n_row
+                    n_row,
+                    HexType.Sea if randint(0, 1) == 0 else HexType.Land
                 )
             )
         return tiles

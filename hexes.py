@@ -1,12 +1,14 @@
 """Contains data for building hexagonal maps."""
 
 from collections import namedtuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 from typing import List, Generator, Tuple
 
 from math import sqrt, sin, cos
 from math import pi as PI
+
+from hex_types import HexType
 
 Point = namedtuple("Point", "x_position y_position")
 AxialCoords = namedtuple("AxialCoords", "q_axis r_axis")
@@ -25,6 +27,8 @@ class HexTile:
 
     _offsetx: int = 0
     _offsety: int = 0
+
+    _type: HexType = field(default=HexType.Sea)
 
     @cached_property
     def corners(self) -> Tuple[Point]:
@@ -69,7 +73,11 @@ class HexTile:
         """This tile's axial coordinates, converted from doubled."""
         return HexTile.doubled2axial(self.doubled)
 
-    # Conversion methods
+    @property
+    def type(self) -> HexType:
+        return self._type
+
+    # Conversion methods for coordinates.
 
     @staticmethod
     def axial2doubled(coordinates: AxialCoords) -> DoubledCoords:
