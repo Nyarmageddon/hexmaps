@@ -4,13 +4,17 @@ from random import randint
 
 import pygame
 
+from hex_types import HexType
 from hexes import HexTile
 from hexmaps import HexMap
 
 # TODO Move these to some kind of config.
 SCREEN_RESOLUTION = (1200, 800)
 BG_COLOR = (245, 222, 179)
-BASE_TILE_COLOR = (205, 133, 63)
+COLORS = {
+    HexType.Land: (205, 133, 63),
+    HexType.Sea: (64, 135, 206),
+}
 
 
 def run_graphics():
@@ -67,7 +71,9 @@ def _draw_map(screen):
     my_map = HexMap(30, 30, _hex_size=30)
     for tile in my_map:
         # print(tile)
-        tile_color = _modify_color(BASE_TILE_COLOR)
+        color = COLORS[tile.type]
+
+        tile_color = _modify_color(color)
         pygame.draw.polygon(screen, tile_color, tile.corners)
     return my_map
 
@@ -76,7 +82,7 @@ def _draw_hex(screen):
     """Draw one hex on the screen."""
     # Initialize one hex and draw it on the screen.
     my_tile = HexTile(350, 350, 50)
-    pygame.draw.polygon(screen, BASE_TILE_COLOR, my_tile.corners)
+    pygame.draw.polygon(screen, COLORS[HexType.Land], my_tile.corners)
 
 
 if __name__ == "__main__":
