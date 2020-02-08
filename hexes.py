@@ -32,16 +32,16 @@ class HexTile:
         return tuple((Point(round(x), round(y))
                       for x, y in self._get_corners()))
 
-    def _get_corners(self) -> Generator[Tuple[float], None, None]:
-        """Calculate all corners for this hextile."""
+    def _get_corners(self) -> Generator[Point, None, None]:
+        """Calculate all six corners for this hextile."""
         for num_corner in range(6):
             # Each corner is 60 degrees apart from the next one.
             angle_degrees = 60 * num_corner + 30
             angle_rad = PI / 180 * angle_degrees
             # Calculate 6 points by drawing 6 lines from the center.
             # Lines' length are determined by hextile's size.
-            yield (self._x_position + self._size * cos(angle_rad),
-                   self._y_position + self._size * sin(angle_rad))
+            yield Point(self._x_position + self._size * cos(angle_rad),
+                        self._y_position + self._size * sin(angle_rad))
 
     @cached_property
     def position(self) -> Point:
@@ -66,7 +66,7 @@ class HexTile:
 
     @cached_property
     def axial(self) -> AxialCoords:
-        """Convert hex's doubled coordinates to axial."""
+        """This tile's axial coordinates, converted from doubled."""
         return HexTile.doubled2axial(self.doubled)
 
     # Conversion methods
@@ -74,6 +74,7 @@ class HexTile:
     @staticmethod
     def axial2doubled(coordinates: AxialCoords) -> DoubledCoords:
         q, r = coordinates
+        # Doubled base vectors are (0, 2) and (1, 1)
         return DoubledCoords(2*q + r, r)
 
     @staticmethod
@@ -96,6 +97,7 @@ class HexTile:
     def cube2axial(coordinates: CubeCoords) -> AxialCoords:
         """Convert hex's cube coordinates (x, y, z)
             to axial coordinates (q, r)."""
+        # Discard the z coordinate.
         return AxialCoords(*coordinates[:2])
 
     @staticmethod
@@ -108,8 +110,8 @@ class HexTile:
 
         # Calculate differences made when rounding, for each axis.
         x_diff, y_diff, z_diff = (
-            abs(started - round_)
-            for started, round_ in zip(coordinates, round_coords)
+            abs(original - round_)
+            for original, round_ in zip(coordinates, round_coords)
         )
 
         # Find biggest difference of them; recalculate value for that axis.

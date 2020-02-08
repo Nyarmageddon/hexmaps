@@ -34,7 +34,7 @@ def test_frozen(default_hex: HexTile, hex_100_size: HexTile):
 
 def test_corners(hex_100_size: HexTile):
     corners = hex_100_size.corners
-    assert isinstance(corners, list)
+    assert isinstance(corners, tuple)
     assert len(corners) == 6
     for corner in corners:
         assert isinstance(corner, Point)
