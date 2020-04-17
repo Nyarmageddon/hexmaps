@@ -22,6 +22,7 @@ def run_graphics():
     # Initialize Pygame window, fill it with solid color.
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_RESOLUTION)
+    pygame.display.set_caption("Nyarmageddon's Hexmaps")
     screen.fill(color=BG_COLOR)
 
     my_map = _draw_map(screen)
@@ -62,13 +63,14 @@ def _handle_events(screen, hexmap: HexMap):
 # TODO move color management to separate module.
 def _modify_color(color):
     """Apply a small change to the given color."""
-    return tuple(color_component + randint(-30, 30)
+    return tuple(color_component + randint(-20, 20)
                  for color_component in color)
 
 
 def _draw_map(screen):
     """Draw a grid of hexes on the screen."""
-    my_map = HexMap(30, 30, _hex_size=30)
+    my_map = HexMap(80, 80, _hex_size=10)
+    my_map.generate_with_random_walk(150, iterations=25)
     for tile in my_map:
         # print(tile)
         color = COLORS[tile.type]
