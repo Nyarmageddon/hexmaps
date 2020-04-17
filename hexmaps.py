@@ -5,7 +5,7 @@
 from dataclasses import dataclass, field
 from itertools import product
 from math import sqrt
-from random import randint
+from random import randint, choice
 from typing import Iterator, List
 
 from hexes import HexTile, Point, AxialCoords, DoubledCoords
@@ -48,6 +48,12 @@ class HexMap():
 
     def __iter__(self) -> Iterator[HexTile]:
         return iter(self._hexes)
+
+    def __len__(self) -> int:
+        return len(self._hexes)
+
+    def __getitem__(self, index: int) -> HexTile:
+        return self._hexes[index]
 
     def get_hex(self, *coordinates) -> HexTile:
         """Get hex with given doubled coordinates, or None if not in this map.
@@ -126,6 +132,38 @@ class HexMap():
 
         return self.get_hex(coords)
 
+    def generate_with_random_walk(self, steps: int, iterations: int = 1,
+                                  start: DoubledCoords = None) -> None:
+        """Start random walk at given coordinates with given amount of steps.
+           Every visited hex becomes a land."""
+        walk_vectors = list(NEIGHBOR_DIRECTIONS)
+        # # Can add some additional vectors of increased length later.
+        # walk_vectors.extend([
+        #     (10, 0),
+        # ])
+
+        for _ in range(iterations):
+            if start is None:
+                current_tile = choice(self)
+                current_coords = current_tile.doubled
+            else:
+                current_tile, current_coords = self.get_hex(start), start
+
+            for _ in range(steps):
+                # Change sea to land.
+                current_tile.type = HexType.Land
+
+                # Move another step.
+                step = choice(walk_vectors)
+                current_coords = tuple(sum(x)
+                                       for x in zip(current_coords, step))
+                current_tile = self.get_hex(current_coords)
+
+                # Reset to random position if went out of bounds.
+                if not current_tile:
+                    current_tile = choice(self)
+                    current_coords = current_tile.doubled
+
     # TODO think of correct place to put this method in.
     @staticmethod
     def _generate_hexes(width: int, height: int,
@@ -152,7 +190,7 @@ class HexMap():
                     # In odd rows, offset them by 1.
                     n_column * 2 + (1 if offset else 0),
                     n_row,
-                    HexType.Sea if randint(0, 1) == 0 else HexType.Land
+                    HexType.Sea  # if randint(0, 1) == 0 else HexType.Land
                 )
             )
         return tiles
