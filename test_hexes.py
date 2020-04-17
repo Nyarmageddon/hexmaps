@@ -25,11 +25,11 @@ def test_hex_init(default_hex: HexTile, hex_100_size: HexTile):
     assert hex_100_size._size == 100
 
 
-def test_frozen(default_hex: HexTile, hex_100_size: HexTile):
-    with pytest.raises(FrozenInstanceError):
-        hex_100_size._size = 200
-    with pytest.raises(FrozenInstanceError):
-        default_hex._x_position = 50
+# def test_frozen(default_hex: HexTile, hex_100_size: HexTile):
+#     with pytest.raises(FrozenInstanceError):
+#         hex_100_size._size = 200
+#     with pytest.raises(FrozenInstanceError):
+#         default_hex._x_position = 50
 
 
 def test_corners(hex_100_size: HexTile):

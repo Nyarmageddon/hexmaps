@@ -16,7 +16,7 @@ CubeCoords = namedtuple("CubeCoods", "x_axis y_axis z_axis")
 DoubledCoords = namedtuple("DoubledCoords", "x_offset y_offset")
 
 
-@dataclass(frozen=True)
+@dataclass
 class HexTile:
     """Basic component of a hex map.
        This hex implementation is pointy-topped."""
@@ -76,6 +76,10 @@ class HexTile:
     @property
     def type(self) -> HexType:
         return self._type
+
+    @type.setter
+    def type(self, new_type: HexType) -> None:
+        self._type = new_type
 
     # Conversion methods for coordinates.
 
